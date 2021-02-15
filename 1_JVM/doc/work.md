@@ -20,3 +20,4 @@
 # 答题
 
 常规1:
+![JVM内存结构](https://github.com/Tureen/grow/blob/main/1_JVM/doc/images/JVM内存结构.jpg)
