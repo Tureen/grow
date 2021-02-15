@@ -10,9 +10,9 @@
 ### 课堂小练 
 - 字节码翻译: [点击打开md文档](https://github.com/Tureen/grow/blob/main/1_JVM/doc/bytecode.md)
 
-- 类加载器: [点击跳转代码](https://github.com/Tureen/grow/tree/main/1_JVM/src/main/java/club/tulane/jvm/classloader)  包路径 `club.tulane.jvm.classloader`
+- 类加载器: [点击跳转代码](https://github.com/Tureen/grow/tree/main/1_JVM/src/main/java/club/tulane/jvm/classloader)
 
-- 类不初始化场景: [点击跳转代码](https://github.com/Tureen/grow/tree/main/1_JVM/src/main/java/club/tulane/jvm/uninit)  包路径 `club.tulane.jvm.uninit`
+- 类不初始化场景: [点击跳转代码](https://github.com/Tureen/grow/tree/main/1_JVM/src/main/java/club/tulane/jvm/uninit)
 
 <br>
 
