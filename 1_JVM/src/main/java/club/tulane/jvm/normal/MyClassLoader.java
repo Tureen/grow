@@ -1,4 +1,4 @@
-package club.tulane.jvm.work;
+package club.tulane.jvm.normal;
 
 import java.io.FileInputStream;
 import java.io.IOException;

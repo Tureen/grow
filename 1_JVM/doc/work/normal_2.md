@@ -16,7 +16,7 @@
 源码: [点击打开代码](https://github.com/Tureen/grow/tree/main/1_JVM/src/main/java/club/tulane/jvm/work/MyClassLoader.java)
 
 ```java
-package club.tulane.jvm.work;
+package club.tulane.jvm.normal;
 
 import java.io.FileInputStream;
 import java.io.IOException;
