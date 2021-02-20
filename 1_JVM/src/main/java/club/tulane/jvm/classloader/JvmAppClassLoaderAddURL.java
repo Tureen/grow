@@ -14,14 +14,14 @@ import java.net.URLClassLoader;
 public class JvmAppClassLoaderAddURL {
 
     public static void main(String[] args) {
-        String appPath = "file:/d:/app/";
+        String appPath = "file:1_JVM/lib/hello.jar";
         URLClassLoader urlClassLoader = (URLClassLoader) JvmAppClassLoaderAddURL.class.getClassLoader();
         try {
             Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
             addURL.setAccessible(true);
             URL url = new URL(appPath);
             addURL.invoke(urlClassLoader, url);
-            Class.forName("club.tulane.jvm.classloader.Hello");
+            Class.forName("Hello");
         } catch (NoSuchMethodException | MalformedURLException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
             e.printStackTrace();
         }

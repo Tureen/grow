@@ -15,12 +15,13 @@ public class CustomClassManage {
      * 利用 CustomClassLoader 加载指定路径的类
      * @throws Exception
      */
-    public void loadFromLib() throws Exception {
+    public CustomClassLoader loadFromLib() throws Exception {
         CustomClassLoader customClassLoader = new CustomClassLoader();
         customClassLoader.addURL(lib);
 
         for (Map.Entry<String, File> entry : CustomClassLoader.FILEMAP.entrySet()) {
             customClassLoader.loadClass(entry.getKey());
         }
+        return customClassLoader;
     }
 }

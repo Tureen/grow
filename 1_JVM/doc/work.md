@@ -13,7 +13,7 @@
 
 - [X] 1)10-使用自定义Classloader机制，实现xlass的加载：xlass是作业材料。
 - [X] 2)20-实现xlass打包的xar（类似class文件打包的jar）的加载：xar里是xlass。
-- [ ] 3)30-基于自定义Classloader实现类的动态加载和卸载：需要设计加载和卸载。
+- [X] 3)30-基于自定义Classloader实现类的动态加载和卸载：需要设计加载和卸载。
 - [ ] 4)30-基于自定义Classloader实现模块化机制：需要设计模块化机制。
 - [ ] 5)30-使用xar作为模块，实现xar动态加载和卸载：综合应用前面的内容。
 
@@ -33,8 +33,12 @@
 
 <br>
 
-进阶1:[点击打开代码](https://github.com/Tureen/grow/tree/main/1_JVM/src/main/java/club/tulane/jvm/advanced/CustomClassManageTest1.java)
+进阶1:[点击打开代码](https://github.com/Tureen/grow/tree/main/1_JVM/src/main/java/club/tulane/jvm/advanced/WorkTest1.java)
 
 <br>
 
-进阶2:[点击打开代码](https://github.com/Tureen/grow/tree/main/1_JVM/src/main/java/club/tulane/jvm/advanced/CustomClassManageTest2.java)
+进阶2:[点击打开代码](https://github.com/Tureen/grow/tree/main/1_JVM/src/main/java/club/tulane/jvm/advanced/WorkTest2.java)
+
+<br>
+
+进阶3:[点击打开md文档](https://github.com/Tureen/grow/blob/main/1_JVM/doc/work/advanced_3.md)
