@@ -14,7 +14,7 @@
 
 - 类不初始化场景: [点击跳转代码](https://github.com/Tureen/grow/tree/main/1_JVM/src/main/java/club/tulane/jvm/uninit)
 
-- 类卸载测试: [点击跳转代码](https://github.com/Tureen/grow/tree/main/1_JVM/src/main/java/club/tulane/jvm/classunloade/ClassUnloadTest)
+- 类卸载测试: [点击跳转代码](https://github.com/Tureen/grow/tree/main/1_JVM/src/main/java/club/tulane/jvm/classunloade/ClassUnloadTest.java)
 
 <br>
 
