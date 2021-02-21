@@ -42,3 +42,7 @@
 <br>
 
 进阶3:[点击打开md文档](https://github.com/Tureen/grow/blob/main/1_JVM/doc/work/advanced_3.md)
+
+<br>
+
+关于自定义类加载器的设计思路: [点击打开md文档](https://github.com/Tureen/grow/blob/main/1_JVM/doc/work/design.md)
