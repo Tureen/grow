@@ -6,7 +6,11 @@
  - [X] 2（必做）自定义一个 Classloader，加载一个 Hello.xlass 文件，执行 hello 方法，此文件内容是一个 Hello.class 文件所有字节（x=255-x）处理后的文件。文件群里提供。
  - [X] 3（必做）画一张图，展示 Xmx、Xms、Xmn、Meta、DirectMemory、Xss 这些内存参数的关系。
  - [ ] 4（选做）检查一下自己维护的业务系统的 JVM 参数配置，用 jstat 和 jstack、jmap 查看一下详情，并且自己独立分析一下大概情况，思考有没有不合理的地方，如何改进。
- 
+ - [X] 5（选做）使用 GCLogAnalysis.java 自己演练一遍串行 / 并行 /CMS/G1 的案例。
+ - [X] 6（选做）使用压测工具（wrk 或 sb），演练 gateway-server-0.0.1-SNAPSHOT.jar 示例。
+ - [ ] 7（选做）如果自己本地有可以运行的项目，可以按照 6 的方式进行演练。
+ - [X] 8（必做）根据上述自己对于 5 和 6 的演示，写一段对于不同 GC 的总结，提交到 Github。
+
 **进阶**
 
 从Classloader到模块化，动态加载的插件机制。
@@ -30,6 +34,18 @@
 <br>
 
 常规3:[点击打开图片](https://github.com/Tureen/grow/blob/main/1_JVM/doc/images/JVM内存结构.jpg)
+
+<br>
+
+常规5:[点击打开md文档](https://github.com/Tureen/grow/blob/main/1_JVM/doc/work/normal_5.md)
+
+<br>
+
+常规6:[点击打开md文档](https://github.com/Tureen/grow/blob/main/1_JVM/doc/work/normal_6.md)
+
+<br>
+
+常规8:作业内容在 "常规5" 和 "常规6" 中
 
 <br>
 
