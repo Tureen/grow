@@ -1,10 +1,13 @@
 package club.tulane.nio.advanced.http;
 
+import club.tulane.nio.advanced.common.ImproperOptionException;
+import club.tulane.nio.advanced.common.SystemException;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
+import lombok.Getter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,74 +15,67 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
-import static io.netty.handler.codec.http.HttpResponseStatus.*;
+import static io.netty.handler.codec.http.HttpResponseStatus.FOUND;
+import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-public class HttpFileServer extends AbstractHttpFileServer {
+public class HttpFileServer{
 
-    private final String url;
     private final ResourceFile resourceFile;
+    private final HttpFileSearch httpFileSearchServer;
+    private final HttpFileSend httpFileSendServer;
+
+    @Getter
+    private ThreadStatusEnum threadStatusEnum;
 
     public HttpFileServer(String url) {
-        this.url = url;
         this.resourceFile = new ResourceFile();
+        this.httpFileSearchServer = new HttpFileSearch(url, resourceFile);
+        this.httpFileSendServer = new HttpFileSend();
+        this.threadStatusEnum = ThreadStatusEnum.RUN;
     }
 
-    @Override
-    protected StringBuilder searchDir(File dir) {
-        return resourceFile.showDir(dir);
+    public void serverFile(ChannelHandlerContext ctx, FullHttpRequest request) throws IOException {
+        try {
+            serverFileWithException(ctx, request);
+        } catch (SystemException e) {
+            threadStatusEnum = ThreadStatusEnum.INTERRUPT;
+            sendError(ctx, e.getStatus());
+        }
     }
 
-    public boolean serverFile(ChannelHandlerContext ctx, FullHttpRequest request) throws IOException {
+    private void serverFileWithException(ChannelHandlerContext ctx, FullHttpRequest request) throws IOException {
         // 检索文件
-        File file = searchFile(ctx, request);
-        if (file == null) return true;
+        File file = httpFileSearchServer.searchFile(ctx, request);
+
+        if (checkThreadStatus(ctx, request, file)) return;
 
         // 构建随机读写文件类
         RandomAccessFile randomAccessFile = buildLoadFile(ctx, file);
-        if (randomAccessFile == null) return true;
 
         // 发送文件信息
-        sendFile(ctx, request, file.getPath(), randomAccessFile);
-        return false;
+        httpFileSendServer.sendFile(ctx, request, file.getPath(), randomAccessFile);
     }
 
-    private File searchFile(ChannelHandlerContext ctx, FullHttpRequest request) {
-        if (validateRequest(ctx, request)) return null;
-
-        final String uri = request.uri();
-        // 对请求uri包装
-        final String path = resourceFile.sanitizeUri(uri, url);
-        if(path == null){
-            // 消毒后路径为空, 返回路径资源不可用
-            sendError(ctx, FORBIDDEN);
-            return null;
-        }
-        File file = new File(path);
-        if(file.isHidden() || !file.exists()){
-            // 如果文件隐藏或者不存在, 返回文件不存在
-            sendError(ctx, NOT_FOUND);
-            return null;
+    private boolean checkThreadStatus(ChannelHandlerContext ctx, FullHttpRequest request, File file) {
+        final ThreadStatusEnum threadStatusEnumForSearch = httpFileSearchServer.getThreadStatusEnum();
+        if(threadStatusEnumForSearch == ThreadStatusEnum.LOAD_DIR){
+            threadStatusEnum = threadStatusEnumForSearch;
+            httpFileSendServer.sendDirs(ctx, resourceFile.showDir(file).toString());
+            return true;
         }
 
-        // 如果文件输入文件夹, 进入文件夹流程, 并 return
-        if(file.isDirectory()){
-            if(uri.endsWith("/")){
-                // 目录 html
-                sendDirs(ctx, file);
-            }else{
-                // 302重定向
-                sendRedirect(ctx, uri + '/');
-            }
-            return null;
+        if(threadStatusEnumForSearch == ThreadStatusEnum.REDIRECT){
+            threadStatusEnum = threadStatusEnumForSearch;
+            sendRedirect(ctx, request.uri() + '/');
+            return true;
         }
 
-        if(!file.isFile()){
-            // 如果非文件, 返回资源不可用错误
-            sendError(ctx, FORBIDDEN);
-            return null;
+        if(threadStatusEnumForSearch == ThreadStatusEnum.INTERRUPT){
+            threadStatusEnum = threadStatusEnumForSearch;
+            return true;
         }
-        return file;
+        return false;
     }
 
     private RandomAccessFile buildLoadFile(ChannelHandlerContext ctx, File file) {
@@ -88,37 +84,28 @@ public class HttpFileServer extends AbstractHttpFileServer {
         try {
             randomAccessFile = new RandomAccessFile(file, "r");
         } catch (FileNotFoundException e) {
-            sendError(ctx, NOT_FOUND);
-            return null;
+            throw new ImproperOptionException(NOT_FOUND);
         }
         return randomAccessFile;
     }
 
-    private boolean validateRequest(ChannelHandlerContext ctx, FullHttpRequest request) {
-        if(!request.decoderResult().isSuccess()){
-            // 连接请求解码失败处理
-            sendError(ctx, BAD_REQUEST);
-            return true;
-        }
-        if(request.method() != HttpMethod.GET){
-            // 请求不是 GET 类型处理
-            sendError(ctx, METHOD_NOT_ALLOWED);
-            return true;
-        }
-        return false;
-    }
-
-    private void sendRedirect(ChannelHandlerContext ctx, String newUri) {
-        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, FOUND);
-        response.headers().set(HttpHeaderNames.LOCATION, newUri);
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-    }
-
-    private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
+    protected void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1,
                 status, Unpooled.copiedBuffer("Failure: " + status.toString()
                 + "\r\n", CharsetUtil.UTF_8));
         response.headers().set(CONTENT_TYPE, "text/plain; charset=UTF-8");
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
+
+    /**
+     * 重定向
+     * @param ctx
+     * @param newUri
+     */
+    protected void sendRedirect(ChannelHandlerContext ctx, String newUri) {
+        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, FOUND);
+        response.headers().set(HttpHeaderNames.LOCATION, newUri);
+        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    }
+
 }

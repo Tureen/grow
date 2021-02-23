@@ -1,6 +1,5 @@
-package club.tulane.httpfile;
+package club.tulane.nio.advanced.http;
 
-import club.tulane.nio.advanced.http.HttpFileServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -15,11 +14,25 @@ public class Server {
 
     private static final String DEFAULT_URL = "/src/";
 
+    public static void main(String[] args) {
+        int port = 8080;
+        if (args.length > 0) {
+            try {
+                port = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        String url = DEFAULT_URL;
+        if (args.length > 1)
+            url = args[1];
+        new Server().run(port, url);
+    }
+
     public void run(final int port, final String url) {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workGroup = new NioEventLoopGroup();
 
-        HttpFileServer httpFileServer = new HttpFileServer(url);
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workGroup)
@@ -37,7 +50,14 @@ public class Server {
                             ch.pipeline().addLast("fileServerHandler", new SimpleChannelInboundHandler<FullHttpRequest>() {
                                 @Override
                                 protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws IOException {
-                                    if (httpFileServer.serverFile(ctx, request)) return;
+
+                                    HttpFileServer httpFileServer = new HttpFileServer(url);
+
+                                    // 查找并发送文件
+                                    httpFileServer.serverFile(ctx, request);
+                                    if(httpFileServer.getThreadStatusEnum() != ThreadStatusEnum.RUN){
+                                        return;
+                                    }
 
                                     // 传输完成, 传入空作为结束标志
                                     final ChannelFuture channelFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
@@ -58,20 +78,5 @@ public class Server {
             workGroup.shutdownGracefully();
         }
 
-    }
-
-    public static void main(String[] args) {
-        int port = 8080;
-        if (args.length > 0) {
-            try {
-                port = Integer.parseInt(args[0]);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-        }
-        String url = DEFAULT_URL;
-        if (args.length > 1)
-            url = args[1];
-        new club.tulane.httpfile.Server().run(port, url);
     }
 }

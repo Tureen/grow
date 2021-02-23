@@ -12,6 +12,11 @@ public class ResourceFile {
 
     private static final Pattern INSECURE_URI = Pattern.compile(".*[<>&\"].*");
 
+    /**
+     * 展示目录
+     * @param dir
+     * @return
+     */
     public StringBuilder showDir(File dir) {
         StringBuilder buf = new StringBuilder();
         final String dirPath = dir.getPath();
@@ -74,6 +79,6 @@ public class ResourceFile {
             return null;
         }
         // 相对路径转绝对路径
-        return System.getProperty("user.dir") + File.separator + uri;
+        return System.getProperty("user.dir") + "/2_NIO/" + File.separator + uri;
     }
 }
