@@ -1,6 +1,7 @@
 package club.tulane.nio.advanced.ftp;
 
 import club.tulane.nio.advanced.ftp.command.Command;
+import club.tulane.nio.advanced.ftp.command.impl.LIST;
 import club.tulane.nio.advanced.ftp.model.FtpRequest;
 import club.tulane.nio.advanced.ftp.model.FtpResponse;
 import club.tulane.nio.advanced.ftp.model.FtpSession;
@@ -20,6 +21,13 @@ public class FtpHandler extends SimpleChannelInboundHandler<FtpRequest> {
         if(command == null){
             FtpResponse response = new FtpResponse(FtpReply.REPLY_502);
             sendResponse(response, ctx);
+            return;
+        }
+        if(command instanceof LIST){
+            session.getPortDataClient().connect().addListener(future -> {
+                final FtpResponse response = command.execute(request, session);
+                sendResponse(response, ctx);
+            });
             return;
         }
         final FtpResponse response = command.execute(request, session);
@@ -45,7 +53,7 @@ public class FtpHandler extends SimpleChannelInboundHandler<FtpRequest> {
         return ctx.writeAndFlush(response).addListener(future -> {
             final ChannelPromise channelPromise = response.getChannelPromise();
             if(channelPromise != null) {
-                channelPromise.trySuccess();
+                channelPromise.setSuccess();
             }
         });
     }

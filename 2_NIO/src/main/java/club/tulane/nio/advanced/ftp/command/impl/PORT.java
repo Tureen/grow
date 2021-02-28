@@ -1,5 +1,6 @@
 package club.tulane.nio.advanced.ftp.command.impl;
 
+import club.tulane.nio.advanced.ftp.FtpPortDataClient;
 import club.tulane.nio.advanced.ftp.FtpReply;
 import club.tulane.nio.advanced.ftp.command.Command;
 import club.tulane.nio.advanced.ftp.model.FtpRequest;
@@ -21,6 +22,7 @@ public class PORT implements Command {
         InetSocketAddress address = null;
         try {
             address = decode(request.getArgument());
+            session.setPortDataClient(new FtpPortDataClient(session, address));
         } catch (Exception e) {
             return new FtpResponse(FtpReply.REPLY_501);
         }

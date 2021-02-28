@@ -9,6 +9,7 @@ public class LISTFileFormatter {
 	public String format(FileView file) {
         StringBuilder sb = new StringBuilder();
 		        sb.append(file.getName());
+		        sb.append(NEWLINE);
         return sb.toString();
 	}
 
