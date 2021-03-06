@@ -1,6 +1,7 @@
 package club.tulane.nio.advanced.ftp.model;
 
 import club.tulane.nio.advanced.ftp.FtpPortDataClient;
+import club.tulane.nio.advanced.ftp.command.Command;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
@@ -22,6 +23,13 @@ public class FtpSession {
     private FileSystemView fileSystemView;
 
     private FtpPortDataClient portDataClient;
+
+    private String uploadFilePath;
+
+    /**
+     * 前一个指令记录: 用于识别是 主动/被动 模式
+     */
+    private Command preCommand;
 
     public FtpSession(ChannelHandlerContext ctx) {
         this.ctx = ctx;

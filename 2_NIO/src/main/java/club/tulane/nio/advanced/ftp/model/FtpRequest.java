@@ -2,6 +2,7 @@ package club.tulane.nio.advanced.ftp.model;
 
 import club.tulane.nio.advanced.ftp.command.Command;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,5 +30,9 @@ public class FtpRequest {
 
     public <T> T getParam(String key) {
         return (T) params.get(key);
+    }
+
+    public boolean hasArgument() {
+        return StringUtils.isNotBlank(argument);
     }
 }

@@ -13,18 +13,17 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * FTP 服务启动类
+ */
 @Slf4j
 public class Server {
 
-    private static final String DEFAULT_URL = "/src/";
-
     public static void main(String[] args) {
-        int port = 8080;
-        String url = DEFAULT_URL;
-        new Server().run(port, url);
+        new Server().run(8080);
     }
 
-    public void run(final int port, final String url) {
+    public void run(final int port) {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workGroup = new NioEventLoopGroup();
 
@@ -39,10 +38,12 @@ public class Server {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) {
-                            // 请求解密
                             ch.pipeline()
+                                    // 注册编解码器
                                     .addLast("ftp-decoder", new FtpCodec())
+                                    // 心跳机制保持连接
                                     .addLast(new IdleStateHandler(0, 0, 120))
+                                    // 业务处理 handler
                                     .addLast(new FtpHandler());
                         }
                     });

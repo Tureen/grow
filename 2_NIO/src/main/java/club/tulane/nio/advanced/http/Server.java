@@ -1,6 +1,8 @@
 package club.tulane.nio.advanced.http;
 
+import club.tulane.nio.advanced.common.NormalOptionException;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -9,10 +11,14 @@ import io.netty.handler.codec.http.*;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
 import java.io.IOException;
+import java.io.RandomAccessFile;
+
+import static io.netty.handler.codec.http.HttpResponseStatus.*;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 public class Server {
 
-    private static final String DEFAULT_URL = "/src/";
+    private static final String DEFAULT_URL = "/file/";
 
     public static void main(String[] args) {
         int port = 8080;
@@ -53,15 +59,41 @@ public class Server {
 
                                     HttpFileServer httpFileServer = new HttpFileServer(url);
 
+                                    // 判断请求类型, 如果是POST则保存文件
+                                    if (request.method() == HttpMethod.POST) {
+                                        final String uri = request.uri();
+                                        // 对请求uri包装
+                                        final String path = ResourceFile.sanitizeUri(uri, url);
+                                        if (path == null) {
+                                            // 消毒后路径为空, 返回路径资源不可用
+                                            throw new NormalOptionException(FORBIDDEN);
+                                        }
+
+                                        try (
+                                                final RandomAccessFile randomAccessFile = new RandomAccessFile(path, "rw")
+                                        ) {
+                                            ByteBuf buffer = request.content();
+                                            int length;
+                                            while ((length = buffer.readableBytes()) > 0) {
+                                                buffer.readBytes(randomAccessFile.getChannel(), length);
+                                            }
+                                        }
+                                        // 传输完成
+                                        HttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, OK);
+                                        final ChannelFuture channelFuture = ctx.writeAndFlush(httpResponse)
+                                                .addListener(ChannelFutureListener.CLOSE);
+                                        return;
+                                    }
+
                                     // 查找并发送文件
                                     httpFileServer.serverFile(ctx, request);
-                                    if(httpFileServer.getThreadStatusEnum() != ThreadStatusEnum.RUN){
+                                    if (httpFileServer.getThreadStatusEnum() != ThreadStatusEnum.RUN) {
                                         return;
                                     }
 
                                     // 传输完成, 传入空作为结束标志
                                     final ChannelFuture channelFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
-                                    if(!HttpUtil.isKeepAlive(request)){
+                                    if (!HttpUtil.isKeepAlive(request)) {
                                         channelFuture.addListener(ChannelFutureListener.CLOSE);
                                     }
                                 }

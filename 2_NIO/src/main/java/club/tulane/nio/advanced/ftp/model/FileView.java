@@ -11,14 +11,24 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 文件视图
+ */
 @Data
 public class FileView {
 
-    public static final String HOME_DIRECTORY = "2_NIO/src";
+    public static final String HOME_DIRECTORY = "2_NIO/file";
+
     private File file;
 
+    /**
+     * 虚拟路径 展示给用户的路径
+     */
     private String virtualPath;
 
+    /**
+     * 真实物理路径
+     */
     private String realPath;
 
     public FileView(String path) {

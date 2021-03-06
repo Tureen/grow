@@ -5,17 +5,23 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 
-public interface CommandFactory {
+/**
+ * 指令工厂
+ */
+public class CommandFactory {
 
-	Map<String, Command> COMMANDS = ImmutableMap.<String, Command>builder()
+	private static Map<String, Command> COMMANDS = ImmutableMap.<String, Command>builder()
 			.put("USER", new USER())
 			.put("PWD", new PWD())
 			.put("CWD", new CWD())
 			.put("PORT", new PORT())
 			.put("LIST", new LIST())
+			.put("RETR", new RETR())
+			.put("TYPE", new TYPE())
+			.put("STOR", new STOR())
 			.build();
 
-	static Command getCommand(String name) {
+	public static Command getCommand(String name) {
 		return COMMANDS.get(name.toUpperCase());
 	}
 }

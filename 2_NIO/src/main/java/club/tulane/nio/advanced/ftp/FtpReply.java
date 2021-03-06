@@ -3,6 +3,9 @@ package club.tulane.nio.advanced.ftp;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * ftp协议的响应状态枚举
+ */
 @Getter
 public enum FtpReply {
 
@@ -94,7 +97,7 @@ public enum FtpReply {
 
 	private String description;
 
-	private FtpReply(int code, String description) {
+	FtpReply(int code, String description) {
 		this.code = code;
 		this.description = description;
 	}

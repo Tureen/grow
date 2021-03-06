@@ -54,7 +54,7 @@ public class ResourceFile {
      * @param uri
      * @return
      */
-    public String sanitizeUri(String uri, String url) {
+    public static String sanitizeUri(String uri, String url) {
         try {
             uri = URLDecoder.decode(uri, "UTF-8");
         } catch (UnsupportedEncodingException e) {

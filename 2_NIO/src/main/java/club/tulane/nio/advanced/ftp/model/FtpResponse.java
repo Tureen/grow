@@ -5,8 +5,6 @@ import club.tulane.nio.advanced.ftp.command.Command;
 import io.netty.channel.ChannelPromise;
 import lombok.Data;
 
-import java.util.function.Supplier;
-
 @Data
 public class FtpResponse {
 
@@ -15,8 +13,6 @@ public class FtpResponse {
     private int code;
 
     private String message;
-
-    private Supplier supplier;
 
     private ChannelPromise channelPromise;
 

@@ -11,6 +11,7 @@ public class USER implements Command {
 
     @Override
     public FtpResponse execute(FtpRequest request, FtpSession session) {
+        // 登录成功 构建用户文件对象信息
         session.setLoggedIn(true);
         session.setFileSystemView(new FileSystemView());
         return new FtpResponse(FtpReply.REPLY_230);

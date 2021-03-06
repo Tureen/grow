@@ -13,15 +13,17 @@ import java.net.UnknownHostException;
 import java.util.StringTokenizer;
 
 /**
- * ftp命令: ls
+ * 被动模式 (ls、get、put 等指令前触发)
+ *
+ * 作用是将ftp服务器变为被动响应方式, 支持传输or接收批量数据流
+ * 被动模式是开辟另一个端口做数据传输 (原ftp请求方端口 +1)
  */
 public class PORT implements Command {
 
     @Override
     public FtpResponse execute(FtpRequest request, FtpSession session) {
-        InetSocketAddress address = null;
         try {
-            address = decode(request.getArgument());
+            InetSocketAddress address = decode(request.getArgument());
             session.setPortDataClient(new FtpPortDataClient(session, address));
         } catch (Exception e) {
             return new FtpResponse(FtpReply.REPLY_501);
@@ -29,6 +31,12 @@ public class PORT implements Command {
         return new FtpResponse(FtpReply.REPLY_200);
     }
 
+    /**
+     * 将传入的ip解析, 返回被动模式下需要建立连接的新地址
+     * @param str
+     * @return
+     * @throws UnknownHostException
+     */
     public static InetSocketAddress decode(String str)
             throws UnknownHostException {
         StringTokenizer st = new StringTokenizer(str, ",");

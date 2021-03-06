@@ -8,6 +8,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.util.CharsetUtil;
 
+/**
+ * ftp协议解码器
+ *
+ * 继承 LineBasedFrameDecoder 分隔类, 当识别 \r\n 时做包分隔
+ * 作用是分隔包以及将数据转换为 FtpRequest 内部使用的请求对象
+ */
 public class FtpDecoder extends LineBasedFrameDecoder {
 
     public FtpDecoder() {
