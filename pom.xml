@@ -11,6 +11,7 @@
     <modules>
         <module>1_JVM</module>
         <module>2_NIO</module>
+        <module>3_CONCURRENT</module>
     </modules>
 
     <properties>
