@@ -8,6 +8,7 @@
 <br>
 
 ### 课堂小练 
+- 线程池示例: [点击跳转代码](https://github.com/Tureen/grow/tree/main/3_CONCURRENT/src/main/java/club/tulane/concurrent/example/ThreadPoolExample.java)
 
 <br>
 
